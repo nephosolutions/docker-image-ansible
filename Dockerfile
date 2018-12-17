@@ -12,26 +12,54 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-ARG ALPINE_VERSION=3.7
+ARG ALPINE_VERSION
 
-FROM alpine:${ALPINE_VERSION} as downloader
-ENV ANSIBLE_VERSION 2.5.4
+FROM alpine:${ALPINE_VERSION} as builder
 
-RUN apk add --no-cache --update build-base ca-certificates libffi-dev openssl-dev py-pip python-dev
-RUN pip install -U ansible==${ANSIBLE_VERSION}
+RUN apk add --no-cache --update \
+  build-base \
+  ca-certificates \
+  libffi-dev \
+  openssl-dev \
+  py-pip \
+  python-dev
+
+RUN pip install --upgrade pip
+
+COPY requirements*.txt /tmp/
+
+ARG REQUIREMENTS
+ENV REQUIREMENTS ${REQUIREMENTS:-frozen}
+
+RUN if [ "${REQUIREMENTS}" == "frozen" ]; then \
+      pip install --quiet --requirement /tmp/requirements-frozen.txt; \
+    else \
+      pip install --quiet --upgrade --requirement /tmp/requirements.txt; \
+    fi
 
 
 FROM alpine:${ALPINE_VERSION}
 LABEL maintainer="sebastian@nephosolutions.com"
 
-RUN apk add --no-cache --update ca-certificates git jq make openssh-client openssl python
+RUN apk add --no-cache --update \
+  bash \
+  ca-certificates \
+  git \
+  libc6-compat \
+  make \
+  openssh-client \
+  openssl \
+  py-pip \
+  python
 
-COPY --from=downloader /usr/bin/ansible* /usr/bin/
-COPY --from=downloader /usr/lib/python2.7 /usr/lib/python2.7
+RUN ln -s /lib /lib64
 
-RUN addgroup circleci && \
-    adduser -G circleci -D circleci
+ARG GIT_CRYPT_VERSION
+ENV GIT_CRYPT_VERSION ${GIT_CRYPT_VERSION}
 
-USER circleci
-WORKDIR /home/circleci
+ADD https://raw.githubusercontent.com/sgerrand/alpine-pkg-git-crypt/master/sgerrand.rsa.pub /etc/apk/keys/sgerrand.rsa.pub
+ADD https://github.com/sgerrand/alpine-pkg-git-crypt/releases/download/${GIT_CRYPT_VERSION}/git-crypt-${GIT_CRYPT_VERSION}.apk /var/cache/apk/
+RUN apk add /var/cache/apk/git-crypt-${GIT_CRYPT_VERSION}.apk
 
+COPY --from=builder /usr/bin/ansible* /usr/bin/
+COPY --from=builder /usr/lib/python2.7 /usr/lib/python2.7
