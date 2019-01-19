@@ -1,4 +1,4 @@
-#   Copyright 2018 NephoSolutions SPRL, Sebastian Trebitz
+#   Copyright 2019 NephoSolutions SPRL, Sebastian Trebitz
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -23,10 +23,7 @@ REQUIREMENTS	:= frozen
 
 remove = $(if $(strip $1),rm -rf $(strip $1))
 
-$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME):
-	$(if $(wildcard $(CACHE_DIR)/$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME).tar),docker load --input $(CACHE_DIR)/$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME).tar)
-	$(if $(wildcard $(CACHE_DIR)/$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME)-builder.tar),docker load --input $(CACHE_DIR)/$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME)-builder.tar)
-
+$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME): restore
 	docker build --rm=false \
 	--build-arg ALPINE_VERSION=$(ALPINE_VERSION) \
 	--build-arg REQUIREMENTS=$(REQUIREMENTS) \
@@ -53,4 +50,8 @@ requirements-frozen.txt:
 clean:
 	$(call remove,$(wildcard $(CACHE_DIR)))
 
-.PHONY: clean $(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME) requirements-frozen.txt
+restore:
+	$(if $(wildcard $(CACHE_DIR)/$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME).tar),docker load --input $(CACHE_DIR)/$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME).tar)
+	$(if $(wildcard $(CACHE_DIR)/$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME)-builder.tar),docker load --input $(CACHE_DIR)/$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME)-builder.tar)
+
+.PHONY: clean restore $(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME) requirements-frozen.txt
