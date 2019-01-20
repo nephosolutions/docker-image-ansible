@@ -1,0 +1,5 @@
+---
+- name: test SSHFP configuration
+  hosts: test
+  roles:
+    - sshfp

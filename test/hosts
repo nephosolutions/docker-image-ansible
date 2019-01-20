@@ -1,0 +1,2 @@
+[test]
+test.strebitz.io ansible_user=strebitz dns_domain=strebitz.io dns_record=test dns_provider=dnsimple
