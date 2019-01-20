@@ -45,7 +45,7 @@ $(CACHE_DIR)/$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME).tar: $(DOCKER_IMAGE_OWNE
 
 requirements-frozen.txt:
 	$(MAKE) $(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME) REQUIREMENTS=upgrade
-	docker run --rm $(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME) pip freeze --quiet > requirements-frozen.txt
+	docker run --entrypoint=/usr/bin/pip --rm $(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME) freeze --quiet > requirements-frozen.txt
 
 clean:
 	$(call remove,$(wildcard $(CACHE_DIR)))
