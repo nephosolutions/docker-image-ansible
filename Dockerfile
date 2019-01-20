@@ -63,3 +63,10 @@ RUN apk add /var/cache/apk/git-crypt-${GIT_CRYPT_VERSION}.apk
 
 COPY --from=builder /usr/bin/ansible* /usr/bin/
 COPY --from=builder /usr/lib/python2.7 /usr/lib/python2.7
+
+RUN mkdir /etc/ansible /usr/share/ansible
+RUN /bin/echo -e "[local]\nlocalhost ansible_connection=local" > /etc/ansible/hosts
+
+COPY ansible.cfg  /etc/ansible/ansible.cfg
+COPY roles        /etc/ansible/roles
+COPY plugins      /usr/share/ansible/plugins
