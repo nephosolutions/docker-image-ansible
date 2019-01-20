@@ -1,0 +1,65 @@
+From adb89a28709db7222efc2a19fa4dbd0fb186c473 Mon Sep 17 00:00:00 2001
+From: styks1987 <mike@saymikeo.com>
+Date: Tue, 4 Dec 2018 07:25:29 -0500
+Subject: [PATCH] v2 dnsimple api uses type vs record_type (#39301)
+
+* v2 dnsimple api uses type vs record_type
+
+https://developer.dnsimple.com/v2/zones/records/#listZoneRecords
+
+* replace prio with priority
+---
+ lib/ansible/modules/net_tools/dnsimple.py | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/lib/ansible/modules/net_tools/dnsimple.py b/lib/ansible/modules/net_tools/dnsimple.py
+index a8cd471d4c15f..4538c1f9edb5c 100644
+--- a/lib/ansible/modules/net_tools/dnsimple.py
++++ b/lib/ansible/modules/net_tools/dnsimple.py
+@@ -244,13 +244,13 @@ def main():
+             if not value:
+                 module.fail_json(msg="Missing the record value")
+ 
+-            rr = next((r for r in records if r['name'] == record and r['record_type'] == record_type and r['content'] == value), None)
++            rr = next((r for r in records if r['name'] == record and r['type'] == record_type and r['content'] == value), None)
+ 
+             if state == 'present':
+                 changed = False
+                 if is_solo:
+                     # delete any records that have the same name and record type
+-                    same_type = [r['id'] for r in records if r['name'] == record and r['record_type'] == record_type]
++                    same_type = [r['id'] for r in records if r['name'] == record and r['type'] == record_type]
+                     if rr:
+                         same_type = [rid for rid in same_type if rid != rr['id']]
+                     if same_type:
+@@ -260,12 +260,12 @@ def main():
+                         changed = True
+                 if rr:
+                     # check if we need to update
+-                    if rr['ttl'] != ttl or rr['prio'] != priority:
++                    if rr['ttl'] != ttl or rr['priority'] != priority:
+                         data = {}
+                         if ttl:
+                             data['ttl'] = ttl
+                         if priority:
+-                            data['prio'] = priority
++                            data['priority'] = priority
+                         if module.check_mode:
+                             module.exit_json(changed=True)
+                         else:
+@@ -276,13 +276,13 @@ def main():
+                     # create it
+                     data = {
+                         'name': record,
+-                        'record_type': record_type,
++                        'type': record_type,
+                         'content': value,
+                     }
+                     if ttl:
+                         data['ttl'] = ttl
+                     if priority:
+-                        data['prio'] = priority
++                        data['priority'] = priority
+                     if module.check_mode:
+                         module.exit_json(changed=True)
+                     else:

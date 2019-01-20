@@ -37,6 +37,8 @@ RUN if [ "${REQUIREMENTS}" == "frozen" ]; then \
       pip install --quiet --upgrade --requirement /tmp/requirements.txt; \
     fi
 
+COPY patches /tmp/patches
+RUN patch -i /tmp/patches/adb89a28709db7222efc2a19fa4dbd0fb186c473.patch -p 2 /usr/lib/python2.7/site-packages/ansible/modules/net_tools/dnsimple.py
 
 FROM alpine:${ALPINE_VERSION}
 LABEL maintainer="sebastian@nephosolutions.com"
