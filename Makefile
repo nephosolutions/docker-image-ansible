@@ -15,8 +15,8 @@
 DOCKER_IMAGE_OWNER	:= nephosolutions
 DOCKER_IMAGE_NAME		:= ansible
 
-ALPINE_VERSION		:= 3.8
-GIT_CRYPT_VERSION	:= 0.6.0-r0
+ALPINE_VERSION		:= 3.9
+GIT_CRYPT_VERSION	:= 0.6.0-r1			# https://github.com/sgerrand/alpine-pkg-git-crypt/releases
 
 CACHE_DIR 		:= .cache
 REQUIREMENTS	:= frozen
