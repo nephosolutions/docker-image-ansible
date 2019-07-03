@@ -2,3 +2,4 @@ ansible
 dnsimple
 dnspython
 docker
+google-auth
