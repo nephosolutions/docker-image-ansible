@@ -16,6 +16,7 @@ DOCKER_IMAGE_OWNER	:= nephosolutions
 DOCKER_IMAGE_NAME	:= ansible
 
 ALPINE_VERSION		:= 3.10
+GCLOUD_SDK_VERSION	:= 256.0.0
 GIT_CRYPT_VERSION	:= 0.6.0-r1			# https://github.com/sgerrand/alpine-pkg-git-crypt/releases
 
 CACHE_DIR 		:= .cache
@@ -26,12 +27,14 @@ remove = $(if $(strip $1),rm -rf $(strip $1))
 $(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME): restore
 	docker build --rm=false \
 	--build-arg ALPINE_VERSION=$(ALPINE_VERSION) \
+	--build-arg GCLOUD_SDK_VERSION=$(GCLOUD_SDK_VERSION) \
 	--build-arg REQUIREMENTS=$(REQUIREMENTS) \
 	--cache-from=$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME)-builder \
 	--tag $(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME)-builder --target=builder .
 
 	docker build --rm=false \
 	--build-arg ALPINE_VERSION=$(ALPINE_VERSION) \
+	--build-arg GCLOUD_SDK_VERSION=$(GCLOUD_SDK_VERSION) \
 	--build-arg GIT_CRYPT_VERSION=$(GIT_CRYPT_VERSION) \
 	--build-arg REQUIREMENTS=$(REQUIREMENTS) \
 	--cache-from=$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME) \
