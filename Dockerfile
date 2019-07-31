@@ -87,3 +87,5 @@ USER alpine
 ENV USER alpine
 
 WORKDIR /home/alpine
+
+ENV PATH $PATH:/opt/google/cloud-sdk/bin
