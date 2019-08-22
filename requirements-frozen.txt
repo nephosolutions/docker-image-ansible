@@ -1,4 +1,4 @@
-ansible==2.8.2
+ansible==2.8.3
 asn1crypto==0.24.0
 backports.ssl-match-hostname==3.7.0.1
 cachetools==3.1.1
@@ -15,10 +15,10 @@ idna==2.8
 ipaddress==1.0.22
 Jinja2==2.10.1
 MarkupSafe==1.1.1
-pyasn1==0.4.5
-pyasn1-modules==0.2.5
+pyasn1==0.4.6
+pyasn1-modules==0.2.6
 pycparser==2.19
-PyYAML==5.1.1
+PyYAML==5.1.2
 requests==2.22.0
 rsa==4.0
 six==1.12.0

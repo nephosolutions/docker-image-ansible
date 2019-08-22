@@ -16,7 +16,7 @@ DOCKER_IMAGE_OWNER	:= nephosolutions
 DOCKER_IMAGE_NAME	:= ansible
 
 ALPINE_VERSION		:= 3.10
-GCLOUD_SDK_VERSION	:= 256.0.0
+GCLOUD_SDK_VERSION	:= 259.0.0
 GIT_CRYPT_VERSION	:= 0.6.0-r1			# https://github.com/sgerrand/alpine-pkg-git-crypt/releases
 
 CACHE_DIR 		:= .cache
@@ -24,13 +24,18 @@ REQUIREMENTS	:= frozen
 
 remove = $(if $(strip $1),rm -rf $(strip $1))
 
-$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME): restore
+$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME)-builder:
+	$(if $(wildcard $(CACHE_DIR)/$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME)-builder.tar),docker load --input $(CACHE_DIR)/$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME)-builder.tar)
+
 	docker build --rm=false \
 	--build-arg ALPINE_VERSION=$(ALPINE_VERSION) \
 	--build-arg GCLOUD_SDK_VERSION=$(GCLOUD_SDK_VERSION) \
 	--build-arg REQUIREMENTS=$(REQUIREMENTS) \
 	--cache-from=$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME)-builder \
 	--tag $(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME)-builder --target=builder .
+
+$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME): $(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME)-builder
+	$(if $(wildcard $(CACHE_DIR)/$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME).tar),docker load --input $(CACHE_DIR)/$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME).tar)
 
 	docker build --rm=false \
 	--build-arg ALPINE_VERSION=$(ALPINE_VERSION) \
@@ -47,14 +52,10 @@ $(CACHE_DIR)/$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME).tar: $(DOCKER_IMAGE_OWNE
 	docker save --output $(CACHE_DIR)/$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME)-builder.tar $(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME)-builder
 
 requirements-frozen.txt:
-	$(MAKE) $(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME) REQUIREMENTS=upgrade
-	docker run --rm $(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME) pip freeze --quiet > requirements-frozen.txt
+	$(MAKE) $(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME)-builder REQUIREMENTS=upgrade
+	docker run --rm $(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME)-builder pip freeze --quiet > requirements-frozen.txt
 
 clean:
 	$(call remove,$(wildcard $(CACHE_DIR)))
 
-restore:
-	$(if $(wildcard $(CACHE_DIR)/$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME).tar),docker load --input $(CACHE_DIR)/$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME).tar)
-	$(if $(wildcard $(CACHE_DIR)/$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME)-builder.tar),docker load --input $(CACHE_DIR)/$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME)-builder.tar)
-
-.PHONY: clean restore $(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME) requirements-frozen.txt
+.PHONY: requirements-frozen.txt

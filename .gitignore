@@ -15,6 +15,9 @@
 ### Ansible ###
 *.retry
 
+### CircleCI build cache ###
+.cache/*
+
 ### VisualStudioCode ###
 .vscode/*
 !.vscode/settings.json

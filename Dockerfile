@@ -77,11 +77,12 @@ RUN mkdir /etc/ansible /usr/share/ansible
 RUN /bin/echo -e "[local]\nlocalhost ansible_connection=local" > /etc/ansible/hosts
 
 COPY ansible.cfg  /etc/ansible/ansible.cfg
-COPY roles        /etc/ansible/roles
 COPY plugins      /usr/share/ansible/plugins
 
 RUN addgroup alpine && \
     adduser -G alpine -D alpine
+
+COPY --chown=alpine:alpine roles /etc/ansible/roles
 
 USER alpine
 ENV USER alpine
