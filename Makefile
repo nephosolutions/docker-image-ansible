@@ -15,9 +15,10 @@
 DOCKER_IMAGE_OWNER	:= nephosolutions
 DOCKER_IMAGE_NAME	:= ansible
 
-ALPINE_VERSION		:= 3.10
-GCLOUD_SDK_VERSION	:= 259.0.0
+ALPINE_VERSION		:= 3.11
+GCLOUD_SDK_VERSION	:= 282.0.0
 GIT_CRYPT_VERSION	:= 0.6.0-r1			# https://github.com/sgerrand/alpine-pkg-git-crypt/releases
+PYTHON_VERSION		:= 3.8.2
 
 CACHE_DIR 		:= .cache
 REQUIREMENTS	:= frozen
@@ -30,6 +31,7 @@ $(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME)-builder:
 	docker build --rm=false \
 	--build-arg ALPINE_VERSION=$(ALPINE_VERSION) \
 	--build-arg GCLOUD_SDK_VERSION=$(GCLOUD_SDK_VERSION) \
+	--build-arg PYTHON_VERSION=$(PYTHON_VERSION) \
 	--build-arg REQUIREMENTS=$(REQUIREMENTS) \
 	--cache-from=$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME)-builder \
 	--tag $(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME)-builder --target=builder .
@@ -41,6 +43,7 @@ $(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME): $(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE
 	--build-arg ALPINE_VERSION=$(ALPINE_VERSION) \
 	--build-arg GCLOUD_SDK_VERSION=$(GCLOUD_SDK_VERSION) \
 	--build-arg GIT_CRYPT_VERSION=$(GIT_CRYPT_VERSION) \
+	--build-arg PYTHON_VERSION=$(PYTHON_VERSION) \
 	--build-arg REQUIREMENTS=$(REQUIREMENTS) \
 	--cache-from=$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME) \
 	--cache-from=$(DOCKER_IMAGE_OWNER)/$(DOCKER_IMAGE_NAME)-builder \

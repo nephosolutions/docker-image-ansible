@@ -13,16 +13,15 @@
 #   limitations under the License.
 
 ARG ALPINE_VERSION
+ARG PYTHON_VERSION
 
-FROM alpine:${ALPINE_VERSION} as builder
+FROM python:${PYTHON_VERSION}-alpine${ALPINE_VERSION} as builder
 
 RUN apk add --no-cache --update \
   build-base \
   ca-certificates \
   libffi-dev \
-  openssl-dev \
-  py-pip \
-  python-dev
+  openssl-dev
 
 RUN pip install --upgrade pip
 
@@ -45,7 +44,7 @@ ENV GCLOUD_SDK_VERSION ${GCLOUD_SDK_VERSION}
 ADD https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GCLOUD_SDK_VERSION}-linux-x86_64.tar.gz google-cloud-sdk-${GCLOUD_SDK_VERSION}-linux-x86_64.tar.gz
 RUN tar -xzf google-cloud-sdk-${GCLOUD_SDK_VERSION}-linux-x86_64.tar.gz
 
-FROM alpine:${ALPINE_VERSION}
+FROM python:${PYTHON_VERSION}-alpine${ALPINE_VERSION}
 LABEL maintainer="sebastian@nephosolutions.com"
 
 RUN apk add --no-cache --update \
@@ -55,9 +54,7 @@ RUN apk add --no-cache --update \
   libc6-compat \
   make \
   openssh-client \
-  openssl \
-  py-pip \
-  python
+  openssl
 
 RUN ln -s /lib /lib64
 
@@ -68,8 +65,8 @@ ADD https://raw.githubusercontent.com/sgerrand/alpine-pkg-git-crypt/master/sgerr
 ADD https://github.com/sgerrand/alpine-pkg-git-crypt/releases/download/${GIT_CRYPT_VERSION}/git-crypt-${GIT_CRYPT_VERSION}.apk /var/cache/apk/
 RUN apk add /var/cache/apk/git-crypt-${GIT_CRYPT_VERSION}.apk
 
-COPY --from=builder /usr/bin/ansible* /usr/bin/
-COPY --from=builder /usr/lib/python2.7 /usr/lib/python2.7
+COPY --from=builder /usr/local/bin/ansible* /usr/local/bin/
+COPY --from=builder /usr/local/lib/python3.8 /usr/local/lib/python3.8
 
 COPY --from=builder /tmp/google-cloud-sdk /opt/google/cloud-sdk
 
