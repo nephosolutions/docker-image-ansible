@@ -54,7 +54,8 @@ RUN apk add --no-cache --update \
   libc6-compat \
   make \
   openssh-client \
-  openssl
+  openssl \
+  rsync
 
 RUN ln -s /lib /lib64
 
