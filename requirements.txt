@@ -1,4 +1,4 @@
-ansible==2.9.4
+ansible==2.9.11
 dnsimple
 dnspython
 docker
