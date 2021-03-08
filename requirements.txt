@@ -1,5 +1,6 @@
-ansible==2.9.11
+ansible==2.10.5
 dnsimple
 dnspython
 docker
-google-auth
+google-auth>=1.3.0
+requests>=2.18.4

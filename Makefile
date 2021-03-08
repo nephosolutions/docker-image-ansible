@@ -15,10 +15,10 @@
 DOCKER_IMAGE_OWNER	:= nephosolutions
 DOCKER_IMAGE_NAME	:= ansible
 
-ALPINE_VERSION		:= 3.11
-GCLOUD_SDK_VERSION	:= 302.0.0
+ALPINE_VERSION		:= 3.13
+GCLOUD_SDK_VERSION	:= 319.0.0
 GIT_CRYPT_VERSION	:= 0.6.0-r1			# https://github.com/sgerrand/alpine-pkg-git-crypt/releases
-PYTHON_VERSION		:= 3.8.2
+PYTHON_VERSION		:= 3.9
 
 CACHE_DIR 		:= .cache
 REQUIREMENTS	:= frozen

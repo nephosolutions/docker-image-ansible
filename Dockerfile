@@ -20,8 +20,10 @@ FROM python:${PYTHON_VERSION}-alpine${ALPINE_VERSION} as builder
 RUN apk add --no-cache --update \
   build-base \
   ca-certificates \
+  cargo \
   libffi-dev \
-  openssl-dev
+  openssl-dev \
+  rust
 
 RUN pip install --upgrade pip
 
@@ -43,6 +45,7 @@ ENV GCLOUD_SDK_VERSION ${GCLOUD_SDK_VERSION}
 
 ADD https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GCLOUD_SDK_VERSION}-linux-x86_64.tar.gz google-cloud-sdk-${GCLOUD_SDK_VERSION}-linux-x86_64.tar.gz
 RUN tar -xzf google-cloud-sdk-${GCLOUD_SDK_VERSION}-linux-x86_64.tar.gz
+
 
 FROM python:${PYTHON_VERSION}-alpine${ALPINE_VERSION}
 LABEL maintainer="sebastian@nephosolutions.com"
@@ -67,7 +70,7 @@ ADD https://github.com/sgerrand/alpine-pkg-git-crypt/releases/download/${GIT_CRY
 RUN apk add /var/cache/apk/git-crypt-${GIT_CRYPT_VERSION}.apk
 
 COPY --from=builder /usr/local/bin/ansible* /usr/local/bin/
-COPY --from=builder /usr/local/lib/python3.8 /usr/local/lib/python3.8
+COPY --from=builder /usr/local/lib/python3.9 /usr/local/lib/python3.9
 
 COPY --from=builder /tmp/google-cloud-sdk /opt/google/cloud-sdk
 
