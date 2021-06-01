@@ -22,5 +22,5 @@ PyYAML==5.4.1
 requests==2.25.1
 rsa==4.7.2
 six==1.15.0
-urllib3==1.26.4
+urllib3==1.26.5
 websocket-client==0.58.0
